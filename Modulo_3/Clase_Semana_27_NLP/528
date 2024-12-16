@@ -1,0 +1,289 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled4.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyOrf9GOG92JXSXHbtrng7gd",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/txusser/Master_IA_Sanidad/blob/main/Modulo_3/NLP1.ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Instalamos algunas dependencias."
+      ],
+      "metadata": {
+        "id": "VVHdPxQ2mzJc"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Er3LAaC_de9Z",
+        "outputId": "1e1257fb-2a2b-48f1-b6c8-28900823ff69"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "mkdir: cannot create directory ‘tutorial’: File exists\n",
+            "fatal: destination path 'scikit-learn' already exists and is not an empty directory.\n",
+            "Requirement already satisfied: scikit-learn in /usr/local/lib/python3.7/dist-packages (1.0.2)\n",
+            "Requirement already satisfied: joblib>=0.11 in /usr/local/lib/python3.7/dist-packages (from scikit-learn) (1.1.0)\n",
+            "Requirement already satisfied: threadpoolctl>=2.0.0 in /usr/local/lib/python3.7/dist-packages (from scikit-learn) (3.1.0)\n",
+            "Requirement already satisfied: scipy>=1.1.0 in /usr/local/lib/python3.7/dist-packages (from scikit-learn) (1.4.1)\n",
+            "Requirement already satisfied: numpy>=1.14.6 in /usr/local/lib/python3.7/dist-packages (from scikit-learn) (1.21.6)\n"
+          ]
+        }
+      ],
+      "source": [
+        "!mkdir tutorial\n",
+        "!git clone https://github.com/scikit-learn/scikit-learn.git\n",
+        "!pip install scikit-learn\n",
+        "!cp -r scikit-learn/doc/tutorial/text_analytics/ tutorial\n",
+        "!python tutorial/text_analytics/data/twenty_newsgroups/fetch_data.py"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Nos descargamos el dataset que vamos a utilizar en este ejemplo. \n",
+        "Es un dataset de e-mails (aproximadamente 12.000 documentos en total), divididos (casi) uniformemente en 20 grupos de dependiendo de los temas que se tratan. Fue recopilado originalmente por Ken Lang, probablemente para su artículo \"Newsweeder: Learning to filter netnews\"."
+      ],
+      "metadata": {
+        "id": "UxdxM3tam2d_"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.datasets import fetch_20newsgroups\n",
+        "twenty_train = fetch_20newsgroups(subset='train',shuffle=True)\n",
+        "twenty_train.target_names"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "oaOOU0yThwVK",
+        "outputId": "6c97a95d-975b-43b3-fe10-6a8ceeadbdc7"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "['alt.atheism',\n",
+              " 'comp.graphics',\n",
+              " 'comp.os.ms-windows.misc',\n",
+              " 'comp.sys.ibm.pc.hardware',\n",
+              " 'comp.sys.mac.hardware',\n",
+              " 'comp.windows.x',\n",
+              " 'misc.forsale',\n",
+              " 'rec.autos',\n",
+              " 'rec.motorcycles',\n",
+              " 'rec.sport.baseball',\n",
+              " 'rec.sport.hockey',\n",
+              " 'sci.crypt',\n",
+              " 'sci.electronics',\n",
+              " 'sci.med',\n",
+              " 'sci.space',\n",
+              " 'soc.religion.christian',\n",
+              " 'talk.politics.guns',\n",
+              " 'talk.politics.mideast',\n",
+              " 'talk.politics.misc',\n",
+              " 'talk.religion.misc']"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 2
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "len(twenty_train.data)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "R-Ibf9SEkl3N",
+        "outputId": "565a3107-1266-4f32-8b4e-f06121f82f29"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "11314"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 3
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for t in twenty_train.target[:10]:\n",
+        "  print(twenty_train.target_names[t])"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "2YiX4hTPkoYS",
+        "outputId": "276d5b71-dfd3-46af-b88a-7558d987db04"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "rec.autos\n",
+            "comp.sys.mac.hardware\n",
+            "comp.sys.mac.hardware\n",
+            "comp.graphics\n",
+            "sci.space\n",
+            "talk.politics.guns\n",
+            "sci.med\n",
+            "comp.sys.ibm.pc.hardware\n",
+            "comp.os.ms-windows.misc\n",
+            "comp.sys.mac.hardware\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"\\n\".join(twenty_train.data[4].split(\"\\n\")))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mPLB6Pr4k53J",
+        "outputId": "2a340259-34e8-4237-ac30-45d95e7fc093"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "From: jcm@head-cfa.harvard.edu (Jonathan McDowell)\n",
+            "Subject: Re: Shuttle Launch Question\n",
+            "Organization: Smithsonian Astrophysical Observatory, Cambridge, MA,  USA\n",
+            "Distribution: sci\n",
+            "Lines: 23\n",
+            "\n",
+            "From article <C5owCB.n3p@world.std.com>, by tombaker@world.std.com (Tom A Baker):\n",
+            ">>In article <C5JLwx.4H9.1@cs.cmu.edu>, ETRAT@ttacs1.ttu.edu (Pack Rat) writes...\n",
+            ">>>\"Clear caution & warning memory.  Verify no unexpected\n",
+            ">>>errors. ...\".  I am wondering what an \"expected error\" might\n",
+            ">>>be.  Sorry if this is a really dumb question, but\n",
+            "> \n",
+            "> Parity errors in memory or previously known conditions that were waivered.\n",
+            ">    \"Yes that is an error, but we already knew about it\"\n",
+            "> I'd be curious as to what the real meaning of the quote is.\n",
+            "> \n",
+            "> tom\n",
+            "\n",
+            "\n",
+            "My understanding is that the 'expected errors' are basically\n",
+            "known bugs in the warning system software - things are checked\n",
+            "that don't have the right values in yet because they aren't\n",
+            "set till after launch, and suchlike. Rather than fix the code\n",
+            "and possibly introduce new bugs, they just tell the crew\n",
+            "'ok, if you see a warning no. 213 before liftoff, ignore it'.\n",
+            "\n",
+            " - Jonathan\n",
+            "\n",
+            "\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "‎El preprocesamiento de texto, la tokenización y el filtrado de palabras clave se incluyen en ‎‎CountVectorizer‎‎, que crea un diccionario de características y transforma los emails en vectores de características:.\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "BUY4B2CZmHSj"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.feature_extraction.text import CountVectorizer\n",
+        "count_vect = CountVectorizer()\n",
+        "X_train_counts = count_vect.fit_transform(twenty_train.data)\n",
+        "X_train_counts.shape"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "k1IcAbgEmGBN",
+        "outputId": "b26978dd-62bb-44f0-8b1c-015def691f59"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(11314, 130107)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Veamos el tamaño de nuestro vocabulario"
+      ],
+      "metadata": {
+        "id": "eBC7fvLYnmhr"
+      }
+    },
+    {
+      "cell_type": "code",
